@@ -4,7 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 //import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
-import {HashRouter as Router, Route, Link, Switch} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Link, Switch, Redirect, withRouter} from 'react-router-dom';
 
 import IssueList from './IssueList.jsx';
 import IssueEdit from './IssueEdit.jsx';
@@ -15,8 +15,9 @@ const NoMatch = () => <p> Page Not Found </p>;
 const RoutedApp = () => (
     <Router>
         <Switch>
-            <Route exact path="/" component={IssueList}/>
-            <Route path="/ddd" component={IssueEdit}/>
+            <Redirect exact from="/" to="/issues" />
+            <Route exact path="/issues" component={IssueList} />
+            <Route exact path="/issues/:id" component={IssueEdit} />
             <Route path="*" component={NoMatch}/>
         </Switch>
     </Router>

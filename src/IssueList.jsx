@@ -1,22 +1,35 @@
 import React from 'react';
 import 'whatwg-fetch';
+import {Link} from 'react-router-dom';
+import PropTypes from 'prop-types';
+import qs from 'qs';
 
 import IssueAdd from './IssueAdd.jsx';
 import IssueFilter from './IssueFilter.jsx';
+
 
 export default class IssueList extends React.Component {
     constructor(){
         super();
         this.state = {issues : [], };
         this.createIssue = this.createIssue.bind(this);
+        this.setFilter = this.setFilter.bind(this);
     }
 
     componentDidMount(){
         this.loadData();  
     }
 
+    componentDidUpdate(prevProps){
+        const oldQuery = qs.parse(prevProps.location.search.substring(1));
+        const newQuery = qs.parse(this.props.location.search.substring(1));
+        if(oldQuery.status === newQuery.status) return;
+        this.loadData(); 
+        
+    }
+
     loadData(){
-        fetch('/api/issues').then(response =>{
+        fetch(`/api/issues${this.props.location.search}`).then(response =>{
             if(response.ok){
                 response.json().then(data =>{
                     console.log("Total count of records:" + data._metadata.total_count);
@@ -64,11 +77,15 @@ export default class IssueList extends React.Component {
         });
     }
 
+    setFilter(query){
+        this.props.history.push({pathname: this.props.location.pathname, search: qs.stringify(query)});
+    }
+
     render(){
         return (
             <div>
                 <h1>Issue List</h1>
-                <IssueFilter />
+                <IssueFilter setFilter = {this.setFilter} />
                 <hr />
                 <IssueTable issues={this.state.issues} />
                 <hr />
@@ -78,6 +95,11 @@ export default class IssueList extends React.Component {
     }
 }
 
+
+IssueList.propTypes = {
+    location: PropTypes.object.isRequired,
+    router: PropTypes.object,
+};
 
 function IssueTable(props){
     const issueRows  = props.issues.map(issue =><IssueRow key = { issue._id } issue = {issue} />);
@@ -104,7 +126,7 @@ function IssueTable(props){
 function IssueRow(props){
     return (
         <tr>
-        <td>{props.issue._id}</td>
+        <td><Link to={`/issues/${props.issue._id}`}>{props.issue._id.substr(-4)}</Link></td>
         <td>{props.issue.status}</td>
         <td>{props.issue.owner}</td>
         <td>{props.issue.created.toDateString()}</td>
