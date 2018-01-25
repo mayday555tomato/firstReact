@@ -15,13 +15,14 @@ const NoMatch = () => <p> Page Not Found </p>;
 const RoutedApp = () => (
     <Router>
         <Switch>
-            <Redirect exact from="/" to="/issues" />
-            <Route exact path="/issues" component={IssueList} />
-            <Route exact path="/issues/:id" component={IssueEdit} />
-            <Route path="*" component={NoMatch}/>
+            <Redirect exact from='/' to='/issues' />
+            <Route exact path='/issues' component={IssueList} />
+            <Route exact path='/issues/:id' component={IssueEdit} />
+            <Route component={NoMatch}/>
         </Switch>
     </Router>
   );
+  // <Route exact path="/" component={IssueList} />
   
 ReactDOM.render(<RoutedApp />, contentNode);
 
