@@ -2,7 +2,7 @@ const webpack = require('webpack');
 module.exports = {
     entry: {
         app: ['./src/App.jsx'],
-        vendor: ['react', 'react-dom', 'whatwg-fetch', 'babel-polyfill', 'react-router-dom','react-router'],
+        vendor: ['react', 'react-dom', 'whatwg-fetch', 'babel-polyfill', 'react-router-dom','react-router','prop-types', 'qs'],
     },
 
     output: {
