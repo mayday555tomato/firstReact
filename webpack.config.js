@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+const path = require('path');
 module.exports = {
     entry: {
         app: ['./src/App.jsx'],
@@ -6,7 +7,7 @@ module.exports = {
     },
 
     output: {
-        path: __dirname + './static', //path has to be an absolute path instead of a relative path
+        path: path.join(__dirname, './static'), //path has to be an absolute path instead of a relative path
         filename: 'app.bundle.js'
     },
 
