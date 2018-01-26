@@ -9,12 +9,21 @@
             }
         table.bordered-table th, td {border: 3px solid green; padding: 4px;}
         table.bordered-table {border-collapse: collapse;}
+
+        .header {
+            border-bottom: 3px solid green; margin_bottom: 20px;
+        }
+
+        .footer {
+            border-top: 3px solid green; padding-top: 5px; margin-top: 20px;
+            font-family: Arial, Helvetica, sans-serif; font-size: 12px; color:orange; font-weight: bold;
+        }
         </style>
     </head>
     <body>
         <div id="contents"></div>
 
-
+        <!-- have to load vendor chunck before app.bundle.js -->
         <script src="/vendor.bundle.js"></script>
         <script src="/app.bundle.js"></script>
         </script>

@@ -12,28 +12,33 @@ module.exports = {
     },
 
     plugins: [
-        new webpack.optimize.CommonsChunkPlugin({name:'vendor', filename:'vendor.bundle.js'}),        
+        new webpack.optimize.CommonsChunkPlugin({name:'vendor', filename:'vendor.bundle.js'}),     
+        new webpack.NamedChunksPlugin(),
     ],
 
     module:{
-        loaders: [
+        rules:[
             {
                 test: /\.jsx$/,
-                loader: 'babel-loader',
-                query: {
-                    presets: ['react', 'es2015']
+                exclude: /(node_modules|bower_components)/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['react', 'es2015']
+                    }
                 }
             },
         ]
     },
     devServer: {
-        port: 8000,
-        contentBase: 'static',
+        port: 2333,
+        contentBase: path.join(__dirname, './static'),
         proxy: {
             '/api/*':{
                 target: 'http://localhost:3000'
             }
-        }
+        },
+        historyApiFallback: true,
     },
     devtool: 'source-map',
 };

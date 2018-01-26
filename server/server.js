@@ -4,7 +4,9 @@ import SourceMapSupport from 'source-map-support';
 import express from 'express';
 import bodyParser from 'body-parser';
 import { MongoClient } from 'mongodb';
+import qs from 'qs';
 import Issue from './issue.js';
+import path from 'path';
 
 SourceMapSupport.install();
 
@@ -39,12 +41,17 @@ MongoClient.connect('mongodb://localhost/issuetracker')
         console.log('ERROR:', error);
     });
 
+
 app.get('/hello', (req, res) => {
     res.send('Hello World');
 });
 
 app.get('/api/issues', (req, res) => {
-    db.collection('issues').find().toArray()
+    const filter = {};
+    console.log('req.query: ' + qs.stringify(req.query));
+    if(req.query.status) filter.status = req.query.status;
+    
+    db.collection('issues').find(filter).toArray()
         .then((issues) => {
             const metadata = { total_count: issues.length };
             res.json({ _metadata: metadata, records: issues });
@@ -77,16 +84,22 @@ app.post('/api/issues', (req, res) => {
         });
 });
 
+
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve('./static/index.html'));
+});
+/* Not necessary for me.
 if (process.env.NODE_ENV !== 'production') {
     const webpack = require('webpack');
     const webpackDevMiddleware = require('webpack-dev-middleware');
     const webpackHotMiddleware = require('webpack-hot-middleware');
-
     const config = require('../webpack.config');
+    
     config.entry.app.push('webpack-hot-middleware/client', 'webpack/hot/only-dev-server');
     config.plugins.push(new webpack.HotModuleReplacementPlugin());
 
     const bundler = webpack(config);
-    app.use(webpackDevMiddleware(bundler, { noInfo: true }));
+    app.use(webpackDevMiddleware(bundler, { noInfo: true, publicPath: config.output.publicPath }));
     app.use(webpackHotMiddleware(bundler, { log: console.log }));
 }
+*/

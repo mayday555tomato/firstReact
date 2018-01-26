@@ -16,9 +16,17 @@ var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
 var _mongodb = require('mongodb');
 
+var _qs = require('qs');
+
+var _qs2 = _interopRequireDefault(_qs);
+
 var _issue = require('./issue.js');
 
 var _issue2 = _interopRequireDefault(_issue);
+
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -58,7 +66,11 @@ app.get('/hello', (req, res) => {
 });
 
 app.get('/api/issues', (req, res) => {
-    db.collection('issues').find().toArray().then(issues => {
+    const filter = {};
+    console.log('req.query: ' + _qs2.default.stringify(req.query));
+    if (req.query.status) filter.status = req.query.status;
+
+    db.collection('issues').find(filter).toArray().then(issues => {
         const metadata = { total_count: issues.length };
         res.json({ _metadata: metadata, records: issues });
     }).catch(error => {
@@ -86,17 +98,22 @@ app.post('/api/issues', (req, res) => {
     });
 });
 
+app.get('*', (req, res) => {
+    res.sendFile(_path2.default.resolve('./static/index.html'));
+});
+/* Not necessary for me.
 if (process.env.NODE_ENV !== 'production') {
     const webpack = require('webpack');
     const webpackDevMiddleware = require('webpack-dev-middleware');
     const webpackHotMiddleware = require('webpack-hot-middleware');
-
     const config = require('../webpack.config');
+    
     config.entry.app.push('webpack-hot-middleware/client', 'webpack/hot/only-dev-server');
     config.plugins.push(new webpack.HotModuleReplacementPlugin());
 
     const bundler = webpack(config);
-    app.use(webpackDevMiddleware(bundler, { noInfo: true }));
+    app.use(webpackDevMiddleware(bundler, { noInfo: true, publicPath: config.output.publicPath }));
     app.use(webpackHotMiddleware(bundler, { log: console.log }));
 }
+*/
 //# sourceMappingURL=server.js.map

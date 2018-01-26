@@ -84,7 +84,6 @@ export default class IssueList extends React.Component {
     render(){
         return (
             <div>
-                <h1>Issue List</h1>
                 <IssueFilter setFilter = {this.setFilter} />
                 <hr />
                 <IssueTable issues={this.state.issues} />
@@ -136,5 +135,3 @@ function IssueRow(props){
     </tr>
     )
 }
-
-//         
