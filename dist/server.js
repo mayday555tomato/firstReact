@@ -67,9 +67,18 @@ app.get('/hello', (req, res) => {
 
 app.get('/api/issues', (req, res) => {
     const filter = {};
-    console.log('req.query: ' + _qs2.default.stringify(req.query));
+    console.log('req.query: |' + _qs2.default.stringify(req.query));
+    console.log('test changes');
     if (req.query.status) filter.status = req.query.status;
-
+    if (req.query.effort_lte || req.query.effort_gte) filter.effort = {};
+    if (req.query.effort_lte) {
+        console.log('gte value:' + parseInt(req.query.effort_gte, 10));
+        filter.effort.$lte = parseInt(req.query.effort_lte, 10);
+    }
+    if (req.query.effort_gte) {
+        console.log('lte value:' + parseInt(req.query.effort_lte, 10));
+        filter.effort.$gte = parseInt(req.query.effort_gte, 10);
+    }
     db.collection('issues').find(filter).toArray().then(issues => {
         const metadata = { total_count: issues.length };
         res.json({ _metadata: metadata, records: issues });
