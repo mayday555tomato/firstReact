@@ -3,7 +3,7 @@ import 'babel-polyfill';
 import SourceMapSupport from 'source-map-support';
 import express from 'express';
 import bodyParser from 'body-parser';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectID } from 'mongodb';
 import qs from 'qs';
 import Issue from './issue.js';
 import path from 'path';
@@ -72,6 +72,24 @@ app.get('/api/issues', (req, res) => {
     console.log('Get /api/issues is called...');
 });
 
+app.get('/api/issues/:id', (req, res) =>{
+    let issueId;
+    try {
+        issueId = new ObjectID(req.params.id);
+    }catch(error){
+        res.status(422).json({message: `Invalid issue ID format: ${error}`});
+        return;
+    }
+    db.collection('issues').find({_id:issueId}).limit(1)
+    .next()
+    .then(issue=> {
+        if (!issue) res.status(404).json({message: `No such issue: ${issueId}`});
+        else res.json(issue);
+    }).catch(error =>{
+        console.log(error);
+        res.status(500).json({message:`Internal Server Error: ${error}`});
+    });
+});
 
 app.post('/api/issues', (req, res) => {
     console.log('Post /api/issues is called...');
