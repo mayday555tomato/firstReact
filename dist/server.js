@@ -103,6 +103,7 @@ app.get('/api/issues/:id', (req, res) => {
         console.log(error);
         res.status(500).json({ message: `Internal Server Error: ${error}` });
     });
+    console.log('Get /api/issues/:id is called...');
 });
 
 app.post('/api/issues', (req, res) => {
@@ -121,10 +122,55 @@ app.post('/api/issues', (req, res) => {
         console.log(error);
         res.status(500).json({ message: `Internal Server Error: ${error}` });
     });
+    console.log('Post /api/issues is called...');
 });
 
 app.get('*', (req, res) => {
     res.sendFile(_path2.default.resolve('./static/index.html'));
+});
+
+app.put('/api/issues/:id', (req, res) => {
+    let issueId;
+    try {
+        issueId = new _mongodb.ObjectID(req.params.id);
+    } catch (error) {
+        res.status(422).json({ message: `Invalid issue ID format: ${error}` });
+        return;
+    }
+
+    const issue = req.body;
+    delete issue._id;
+
+    const error = _issue2.default.validateIssue(issue);
+    if (error) {
+        res.status(422).json({ message: `Invalid request: ${error}` });
+        return;
+    }
+
+    db.collection('issues').update({ _id: issueId }, _issue2.default.convertIssue(issue)).then(() => db.collection('issues').find({ _id: issueId }).limit(1).next()).then(savedIssue => {
+        res.json(savedIssue);
+    }).catch(error => {
+        console.log(error);
+        res.status(500).json({ message: `Internal Server Error: ${error}` });
+    });
+    console.log('Put /api/issues/:id is called...');
+});
+
+app.delete('/api/issues/:id', (req, res) => {
+    let issueId;
+    try {
+        issueId = new _mongodb.ObjectID(req.params.id);
+    } catch (error) {
+        res.status(422).json({ message: `Invalid issue ID format: ${error.message}` });
+        return;
+    }
+
+    db.collection('issues').deleteOne({ _id: issueId }).then(deleteResult => {
+        if (deleteResult.result.n === 1) res.json({ status: 'OK' });else res.json({ status: 'Warning: object not found' });
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json({ message: `Internal Server Error: ${error}` });
+    });
 });
 /* Not necessary for me.
 if (process.env.NODE_ENV !== 'production') {

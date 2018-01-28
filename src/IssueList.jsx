@@ -14,6 +14,7 @@ export default class IssueList extends React.Component {
         this.state = {issues : [], };
         this.createIssue = this.createIssue.bind(this);
         this.setFilter = this.setFilter.bind(this);
+        this.deleteIssue = this.deleteIssue.bind(this);
     }
 
     componentDidMount(){
@@ -80,6 +81,13 @@ export default class IssueList extends React.Component {
         });
     }
 
+    deleteIssue(id){
+        fetch(`/api/issues/${id}`, {method: 'DELETE'}).then(response => {
+            if(!response.ok) alert('Failed to delete issue');
+            else this.loadData();
+        });
+    }
+
     setFilter(query){
         this.props.history.push({pathname: this.props.location.pathname, search: qs.stringify(query)});
     }
@@ -89,7 +97,7 @@ export default class IssueList extends React.Component {
             <div>
                 <IssueFilter setFilter = {this.setFilter} initFilter={qs.parse(this.props.location.search.substring(1))} />
                 <hr />
-                <IssueTable issues={this.state.issues} />
+                <IssueTable issues={this.state.issues} deleteIssue={this.deleteIssue}/>
                 <hr />
                 <IssueAdd createIssue={this.createIssue} />
             </div>
@@ -104,7 +112,7 @@ IssueList.propTypes = {
 };
 
 function IssueTable(props){
-    const issueRows  = props.issues.map(issue =><IssueRow key = { issue._id } issue = {issue} />);
+    const issueRows  = props.issues.map(issue =><IssueRow key = { issue._id } issue = {issue} deleteIssue={props.deleteIssue}/>);
     return (
         <table className="bordered-table">
             <thead>
@@ -116,6 +124,7 @@ function IssueTable(props){
                     <th>Effort</th>
                     <th>Completion Date</th>
                     <th>Title</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -125,7 +134,15 @@ function IssueTable(props){
     );
 }
 
-function IssueRow(props){
+IssueTable.propTypes = {
+    issues: PropTypes.array.isRequired,
+    deleteIssue: PropTypes.func.isRequired,
+}
+
+const IssueRow = (props) =>{
+    function onDeleteClick(){
+        props.deleteIssue(props.issue._id);
+    }
     return (
         <tr>
         <td><Link to={`/issues/${props.issue._id}`}>{props.issue._id}</Link></td>
@@ -135,6 +152,12 @@ function IssueRow(props){
         <td>{props.issue.effort}</td>
         <td>{props.issue.completionDate? props.issue.completionDate.toDateString() : ''}</td>
         <td>{props.issue.title}</td>
+        <td><button onClick={onDeleteClick}>Delete</button></td>
     </tr>
     )
+}
+
+IssueRow.propTypes = {
+    issue: PropTypes.object.isRequired,
+    deleteIssue: PropTypes.func.isRequired,
 }
