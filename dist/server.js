@@ -68,7 +68,6 @@ app.get('/hello', (req, res) => {
 app.get('/api/issues', (req, res) => {
     const filter = {};
     console.log('req.query: |' + _qs2.default.stringify(req.query));
-    console.log('test changes');
     if (req.query.status) filter.status = req.query.status;
     if (req.query.effort_lte || req.query.effort_gte) filter.effort = {};
     if (req.query.effort_lte) {

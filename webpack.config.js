@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
     entry: {
         app: ['./src/App.jsx'],
-        vendor: ['react', 'react-dom', 'whatwg-fetch', 'babel-polyfill', 'react-router-dom','react-router','prop-types', 'qs'],
+        vendor: ['react', 'react-dom', 'whatwg-fetch', 'babel-polyfill', 'react-router-dom','react-router','prop-types', 'qs', 'bootstrap', 'jquery', 'popper.js', 'react-router-bootstrap', 'react-bootstrap'],
     },
 
     output: {

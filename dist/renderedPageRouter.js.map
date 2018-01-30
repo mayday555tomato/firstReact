@@ -1,0 +1,1 @@
+{"version":3,"sources":["../server/renderedPageRouter.jsx"],"names":[],"mappings":";;AAAA;;;;AACA;;AACA;;;;AAEA;;;;AACA","file":"renderedPageRouter.js","sourcesContent":["import React from 'react';\nimport {renderToString} from 'react-dom/server';\nimport Router from 'express';\n\nimport HelloWorld from '../src/HelloWorld.jsx';\nimport template from './template';"]}

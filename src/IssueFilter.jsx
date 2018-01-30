@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import {Col, Row, FormGroup, FormControl, ControlLabel, InputGroup, ButtonToolbar, Button} from 'react-bootstrap';
 
 export default class IssueFilter extends React.Component {
     constructor(props){
@@ -31,31 +32,48 @@ export default class IssueFilter extends React.Component {
     render() {
         const Separator = () => <span> | </span>;
         return (
-            <div>
-                Status: &nbsp;&nbsp;
-                <select value = {this.state.status} onChange={this.onChangeStatus}>
-                    <option value="">(Any)</option>
-                    <option value='New'>New</option>
-                    <option value='Open'>Open</option>
-                    <option value='Assigned'>Assigned</option>
-                    <option value='Fixed'>Fixed</option>
-                    <option value='Verified'>Verified</option>
-                    <option value='Closed'>Closed</option>
-                </select>
-                <Separator />
-                    Effort between:&nbsp;&nbsp; 
-                    <input size={5} defaultValue='' onChange={this.onChangeEffortGte} />&nbsp;--&nbsp;
-                    <input size={5} defaultValue='' onChange={this.onChangeEffortLte} />
-                    <Separator />
-                    <button onClick={this.applyFilter}>Apply</button>
-                    <Separator />
-                    <button onClick={this.resetFilter}>Reset</button>
-                    <Separator />
-                    <button onClick={this.clearFilter}>Clear</button>
-            </div>
+            <Row>
+                <Col xs = {6} sm={4} md={3} lg={2}>
+                    <FormGroup>
+                        <ControlLabel>Status</ControlLabel>
+                        <FormControl componentClass='select' value={this.state.status} onChange={this.onChangeStatus}>
+                            <option value="">(Any)</option>
+                            <option value="New">New</option>
+                            <option value="Open">Open</option>
+                            <option value="Assigned">Assigned</option>
+                            <option value="Fixed">Fixed</option>
+                            <option value="Verified">Verified</option>
+                            <option value="Closed">Closed</option>
+                        </FormControl>
+                    </FormGroup>
+                </Col>
+                <Col xs={6} sm={4} md={3} lg={2}>
+                    <FormGroup>
+                        <ControlLabel>Effort</ControlLabel>
+                        <InputGroup>
+                            <FormControl value={this.state.effort_gte} onChange={this.onChangeEffortGte} />
+                            <InputGroup.Addon> - </InputGroup.Addon>
+                            <FormControl value={this.state.effort_lte} onChange={this.onChangeEffortLte} />
+                        </InputGroup>
+                    </FormGroup>
+                </Col>
+                <Col xs={6} sm={4} md={3} lg={2}>
+                    <FormGroup>
+                        <ControlLabel>&nbsp;</ControlLabel>
+                        <ButtonToolbar>
+                            <Button bsStyle='success' onClick={this.applyFilter}>Apply</Button>
+                            <Button onClick={this.resetFilter} disabled={!this.state.changed}>Reset</Button>
+                            <Button onClick={this.clearFilter}>Clear</Button>
+                        </ButtonToolbar>
+                    </FormGroup>
+                </Col>
+            </Row>
+
+
+           
         );
     }
-    //value={this.state.effort_gte}
+        
     onChangeStatus(e){
         this.setState({status: e.target.value, changed: true});
     }

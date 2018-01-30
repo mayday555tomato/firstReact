@@ -3,18 +3,25 @@ import 'whatwg-fetch';
 import {Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import qs from 'qs';
-
-import IssueAdd from './IssueAdd.jsx';
+import {Button, Glyphicon, Table, Panel } from 'react-bootstrap';
 import IssueFilter from './IssueFilter.jsx';
+import Toast from './Toast.jsx';
 
 
 export default class IssueList extends React.Component {
     constructor(){
         super();
-        this.state = {issues : [], };
-        this.createIssue = this.createIssue.bind(this);
+        this.state = {
+            issues : [],
+            toastVisible: false,
+            toastMessage: '',
+            toastType: 'success',
+        };
         this.setFilter = this.setFilter.bind(this);
         this.deleteIssue = this.deleteIssue.bind(this);
+        this.showError = this.showError.bind(this);
+        this.showSuccess = this.showSuccess.bind(this);
+        this.dismissToast = this.dismissToast.bind(this);
     }
 
     componentDidMount(){
@@ -32,6 +39,22 @@ export default class IssueList extends React.Component {
         this.loadData();         
     }
 
+    showError(message){
+        this.setState({
+            toastVisible: true, toastMessage: message, toastType: 'danger'
+        });
+    }
+
+    showSuccess(message){
+        this.setState({
+            toastVisible: true, toastMessage: message, toastType: 'info'
+        })
+    }
+
+    dismissToast(){
+        this.setState({toastVisible: false});
+    }
+
     loadData(){
         fetch(`/api/issues${this.props.location.search}`).then(response =>{
             if(response.ok){
@@ -47,14 +70,14 @@ export default class IssueList extends React.Component {
                 });
             }else {
                 response.json().then(error =>{
-                    alert("Failed to fetch issues:" + error.message);
+                    this.showError(`Failed to fetch issues ${error.message}` );
                 });
             }
         }).catch(err =>{
-            alert("Error in fetching data from server:", err);
+            this.showError(`Error in fetching data from server ${err}`);
         });
     }
-
+/*
     createIssue(newIssue){
         fetch('/api/issues', {
             method: 'POST',
@@ -71,35 +94,43 @@ export default class IssueList extends React.Component {
                             updatedIssue.completionDate = new Date(updatedIssue.completionDate);
                         const newIssues = this.state.issues.concat(updatedIssue); //javascript: array.concat: combine two arrays together, doesnt modify original array, returns a new combined array.
                         this.setState({issues : newIssues});
+                        this.showSuccess('Created successfully.');
                     }
                 );
             }else{
                 response.json().then(err => {
-                    alert("Failed to add issue: " + err.message)
+                    this.showError(`Failed to add issue: ${err.message}`);
                 });
             }
         });
     }
-
+*/
     deleteIssue(id){
         fetch(`/api/issues/${id}`, {method: 'DELETE'}).then(response => {
             if(!response.ok) alert('Failed to delete issue');
-            else this.loadData();
+            else {
+                this.loadData();
+                this.showSuccess('Delete Succeeded.');
+            }
         });
     }
 
     setFilter(query){
         this.props.history.push({pathname: this.props.location.pathname, search: qs.stringify(query)});
     }
-
     render(){
         return (
-            <div>
-                <IssueFilter setFilter = {this.setFilter} initFilter={qs.parse(this.props.location.search.substring(1))} />
-                <hr />
+            <div>            
+                <Panel bsStyle="success">
+                    <Panel.Heading>
+                        <Panel.Title toggle>Filter</Panel.Title>
+                    </Panel.Heading>
+                    <Panel.Body collapsible> 
+                    <IssueFilter setFilter = {this.setFilter} initFilter={qs.parse(this.props.location.search.substring(1))} />
+                    </Panel.Body>
+                </Panel>
                 <IssueTable issues={this.state.issues} deleteIssue={this.deleteIssue}/>
-                <hr />
-                <IssueAdd createIssue={this.createIssue} />
+                <Toast showing={this.state.toastVisible} message={this.state.toastMessage} onDismiss={this.dismissToast} bsStyle={this.state.toastType} />
             </div>
         );
     }
@@ -114,7 +145,7 @@ IssueList.propTypes = {
 function IssueTable(props){
     const issueRows  = props.issues.map(issue =><IssueRow key = { issue._id } issue = {issue} deleteIssue={props.deleteIssue}/>);
     return (
-        <table className="bordered-table">
+        <Table bordered condensed hover responsive>
             <thead>
                 <tr>
                     <th>Id</th>
@@ -130,7 +161,7 @@ function IssueTable(props){
             <tbody>
                 {issueRows}
             </tbody>
-        </table>
+        </Table>
     );
 }
 
@@ -152,7 +183,7 @@ const IssueRow = (props) =>{
         <td>{props.issue.effort}</td>
         <td>{props.issue.completionDate? props.issue.completionDate.toDateString() : ''}</td>
         <td>{props.issue.title}</td>
-        <td><button onClick={onDeleteClick}>Delete</button></td>
+        <td><Button bsSize='xsmall' onClick={onDeleteClick}><Glyphicon glyph='trash' /></Button></td>
     </tr>
     )
 }
