@@ -1,45 +1,29 @@
-
-import 'babel-polyfill';
-import SourceMapSupport from 'source-map-support';
 import express from 'express';
 import bodyParser from 'body-parser';
-import { MongoClient, ObjectID } from 'mongodb';
+import { ObjectID } from 'mongodb';
 import qs from 'qs';
 import Issue from './issue.js';
 import path from 'path';
 
-SourceMapSupport.install();
+import renderedPageRouter from './renderedPageRouter.jsx';
 
 const app = express();
 
 app.use(express.static('static'));
 app.use(bodyParser.json());
-/*
-const issues = [
-    {
-        id: 1, status: 'Open', owner: 'Ravan',
-        created: new Date('2016-08-15'), effort: 5, completionDate: undefined,
-        title: 'Error in console when clicking Add'
-    },
-    {
-        id: 2, status: 'Assigned', owner: 'Eddie',
-        created: new Date('2016-08-16'), effort: 12, completionDate: new Date('2016-08-30'),
-        title: 'Missing bottom border on panel'
-    }
-];
-*/
+
+
+app.use('/', renderedPageRouter);
 
 
 let db;
-MongoClient.connect('mongodb://localhost/issuetracker')
-    .then((connection) => {
-        db = connection.db('issuetracker'); // need
-        app.listen(3000, () => {
-            console.log('App started on port 3000');
-        });
-    }).catch((error) => {
-        console.log('ERROR:', error);
-    });
+
+function setDb(newDb){
+    db = newDb;
+}
+
+export {app, setDb};
+
 
 
 app.get('/hello', (req, res) => {
@@ -112,10 +96,6 @@ app.post('/api/issues', (req, res) => {
         console.log('Post /api/issues is called...');
 });
 
-
-app.get('*', (req, res) => {
-    res.sendFile(path.resolve('./static/index.html'));
-});
 
 app.put('/api/issues/:id', (req,res) => {
     let issueId;

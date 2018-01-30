@@ -24,9 +24,9 @@ var _issue = require('./issue.js');
 
 var _issue2 = _interopRequireDefault(_issue);
 
-var _path = require('path');
+var _renderedPageRouter = require('./renderedPageRouter.jsx');
 
-var _path2 = _interopRequireDefault(_path);
+var _renderedPageRouter2 = _interopRequireDefault(_renderedPageRouter);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -124,9 +124,7 @@ app.post('/api/issues', (req, res) => {
     console.log('Post /api/issues is called...');
 });
 
-app.get('*', (req, res) => {
-    res.sendFile(_path2.default.resolve('./static/index.html'));
-});
+app.use('/', _renderedPageRouter2.default);
 
 app.put('/api/issues/:id', (req, res) => {
     let issueId;
