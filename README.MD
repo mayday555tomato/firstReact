@@ -1,16 +1,19 @@
-Chapter 09 - API: update and delete
+Chapter 10 - React-Bootstrap
 
-Update:
-- onSubmit event on form
-- PUT api
-- server side: issues.js: convert issue: convert issue datetime object
 
-Delete:
-- delete button: in IssueRow
-- delete function: in IssueList, get passed to IssueTable: <IssueTable issues={this.state.issues} deleteIssue={this.deleteIssue}/>
-- IssueTable: pass deleteIssue to IssueRow: const issueRows  = props.issues.map(issue =><IssueRow key = { issue._id } issue = {issue} deleteIssue={props.deleteIssue}/>);
-- IssueRow:  <td><button onClick={onDeleteClick}>Delete</button></td>
-function onDeleteClick(){
-    props.deleteIssue(props.issue._id);
-}
+react bootstrap and react - router bootstrap
+
+-panel
+-nav
+-modal
+-form
+-button
+-table
+-row
+-col
+
+NOTE: a bug on modal nested in navitem. 
+there is an onClick event defined in navitem to show modal; then on the cancel button in modal, another onclick event to close modal. however: if you click anywhere in the modal, the onclick event (showmodal) in the navitem will be triggerd. 
+
+neet to somehow fix this in the future.
 
